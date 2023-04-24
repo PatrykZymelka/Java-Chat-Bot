@@ -10,8 +10,14 @@ public class Main {
         Message M = new Message();
         int Port = M.GetPort();
 
-        MainWindow D = new MainWindow();
-        MainWindow.Launch();
+        MainWindow.getInstance();
+
+        MainServer MS = new MainServer();
+        MS.run(Port);
+
+
+
+
 
 
     }

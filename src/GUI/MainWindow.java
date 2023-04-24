@@ -1,8 +1,6 @@
 package GUI;
 
-import Server.Client;
-import Server.MainServer;
-
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -13,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainWindow extends JFrame{
+    private static MainWindow instance = null;
     public JPanel MainPanel;
     public JButton ConnectButton;
     public JList Users;
@@ -21,17 +20,16 @@ public class MainWindow extends JFrame{
     private JButton GetMessagesButton;
     private JButton SendMsgButton;
     private JButton SearchButton;
-    private JTextField Search;
+    public JTextField Search;
     private JList list1;
     private JTextField typeMessageHereTextField;
-    private JTextField serverIPPortTextField;
-    private JLabel StatusLabel;
-    boolean Connected = false;
-    public MainWindow() {
+    public JTextField serverIPPortTextField;
+    public JLabel StatusLabel;
+    private MainWindow() {
         Client C = new Client();
         setContentPane(MainPanel);
         setTitle("Application-Alpha");
-        setSize(650,600);
+        setSize(650, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         ConnectButton.addActionListener(new ActionListener() {
@@ -40,7 +38,7 @@ public class MainWindow extends JFrame{
                 StatusLabel.setText("Connected to Port: " + serverIPPortTextField.getText());
                 int P = Integer.parseInt(serverIPPortTextField.getText());
                 try {
-                    C.Connect(P, "Connect-User1-User1- ");
+                    C.Connect(P, "Connect-User1-User1-S");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -59,7 +57,7 @@ public class MainWindow extends JFrame{
             public void actionPerformed(ActionEvent e) {
 
                 System.out.println(e.getActionCommand() + " " + e.getModifiers());
-                JOptionPane.showMessageDialog(MainPanel, "Messages from " + (String)Users.getSelectedValue() + " have been refreshed!");
+                JOptionPane.showMessageDialog(MainPanel, "Messages from " + (String) Users.getSelectedValue() + " have been refreshed!");
             }
         });
 
@@ -71,9 +69,10 @@ public class MainWindow extends JFrame{
         });
         SendMsgButton.addActionListener(new ActionListener() {
             DefaultListModel model = new DefaultListModel();
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(Connected){
+                /*if (Connected) {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
                     ChatPanel.setModel(model);
@@ -81,22 +80,31 @@ public class MainWindow extends JFrame{
                     model.addElement(txt);
                     typeMessageHereTextField.setText("");
                 }
+
+                 */
             }
         });
 
-        SearchButton.addActionListener(new ActionListener() {
+        /*SearchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
             }
         });
 
+         */
+
     }
-    public static void Launch(){
-        MainWindow GUI = new MainWindow();
+    public static MainWindow getInstance() {
+        if (instance == null) {
+            instance = new MainWindow();
+        }
+        return instance;
     }
-    private void createUIComponents() {
+    public void setStatusLabelText(String text) {
+        StatusLabel.setText(text);
     }
+
 
 }
 

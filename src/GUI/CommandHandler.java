@@ -1,16 +1,17 @@
 package GUI;
 
+import GUI.MainWindow;
+
 import javax.swing.*;
 
 public class CommandHandler {
-    MainWindow MW = new MainWindow();
-    public void connect(String Sender, int P) {
-        DefaultListModel<String> mod = new DefaultListModel<>();
 
-        mod.addElement("User1");
+    public static void connect(String Sender, int P) {
+        MainWindow.getInstance().setStatusLabelText("Your IP is: " + Integer.toString(P));
+
     }
 
-    public String getMessagesByUser(String sender, String Rece, String Message) {
+    public static String getMessagesByUser(String sender, String Rece, String Message) {
         return "Message";
     }
     public String[] List(String s){

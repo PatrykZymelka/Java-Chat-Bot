@@ -2,7 +2,6 @@ package Server;
 
 import GUI.CommandHandler;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.*;
 import java.io.*;
@@ -16,23 +15,23 @@ public class MainServer{
 
         Socket server = serverSocket.accept();
         System.out.println("Client connected");
-        DataInputStream socketReader = new DataInputStream(server.getInputStream());
+        InputStream inputStream = server.getInputStream();
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
-        while (!(line = socketReader.readUTF()).equals("exit")) {
+        while ((line = bufferedReader.readLine()) != null) {
             String[] parts = line.split("-");
             String Operation = parts[0];
             String Sender = parts[1];
             String Receiver = parts[2];
             String Message = parts[3];
-            CommandHandler CH = new CommandHandler();
 
             switch (Operation) {
                 case "Connect" -> {
                     System.out.println("Got Here");
-                    CH.connect(Sender, Port);
-                    break;
+                    CommandHandler.connect(Sender, Port);
                 }
-                case "GetM" -> CH.getMessagesByUser(Sender, Receiver, Message);
+                case "GetM" -> CommandHandler.getMessagesByUser(Sender, Receiver, Message);
 
             }
         }
