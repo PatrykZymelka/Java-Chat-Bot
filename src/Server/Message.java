@@ -1,7 +1,7 @@
 package Server;
-import java.util.*;
+import GUI.User;
 
-public class Message extends User{
+public class Message extends User {
     User u = new User();
   public String Content;
   public long Timestamp;

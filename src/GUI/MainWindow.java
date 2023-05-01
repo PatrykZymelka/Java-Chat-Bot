@@ -1,20 +1,15 @@
 package GUI;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-import java.awt.event.ContainerAdapter;
-import java.awt.event.ContainerEvent;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MainWindow extends JFrame{
     private static MainWindow instance = null;
     public JPanel MainPanel;
     public JButton ConnectButton;
-    public JList Users;
+    public JList<String> Users;
     public JList ChatPanel;
     public JButton RefreshButton;
     private JButton GetMessagesButton;
@@ -25,6 +20,8 @@ public class MainWindow extends JFrame{
     private JTextField typeMessageHereTextField;
     public JTextField serverIPPortTextField;
     public JLabel StatusLabel;
+    private JLabel MSG_STATUS;
+
     private MainWindow() {
         Client C = new Client();
         setContentPane(MainPanel);
@@ -35,65 +32,69 @@ public class MainWindow extends JFrame{
         ConnectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                StatusLabel.setText("Connected to Port: " + serverIPPortTextField.getText());
                 int P = Integer.parseInt(serverIPPortTextField.getText());
+                User.SetPort(P);
+
                 try {
-                    C.Connect(P, "Connect-User1-User1-S");
+                    C.Connect(P);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+                try{
+                    C.Send("Connect-User1-User1-S");
+                }catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 serverIPPortTextField.setText(" ");
-            }
-        });
-        serverIPPortTextField.addContainerListener(new ContainerAdapter() {
-            @Override
-            public void componentAdded(ContainerEvent e) {
-                super.componentAdded(e);
             }
         });
 
         RefreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                System.out.println(e.getActionCommand() + " " + e.getModifiers());
-                JOptionPane.showMessageDialog(MainPanel, "Messages from " + (String) Users.getSelectedValue() + " have been refreshed!");
-            }
+                DefaultListModel<String> model = new DefaultListModel<>();
+                String[] u = ClientCommandHandler.getConnectedUsers();
+                int i;
+                for(i=0;i < u.length; i++){
+                    model.addElement(u[i]);
+                }
+                Users.setModel(model);
+               }
         });
 
         GetMessagesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+                String[] Mes = ClientCommandHandler.getMessagesByUser(Users.getSelectedValue());
+                DefaultListModel model = new DefaultListModel();
+                ChatPanel.setModel(model);
+                int i;
+                for(i = 0; i< Mes.length;i++){
+                    model.addElement(Mes[i]);
+                }
+                typeMessageHereTextField.setText("");
             }
         });
-        SendMsgButton.addActionListener(new ActionListener() {
-            DefaultListModel model = new DefaultListModel();
 
+        SendMsgButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*if (Connected) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                    Date date = new Date();
-                    ChatPanel.setModel(model);
-                    String txt = formatter.format(date) + " " + typeMessageHereTextField.getText();
-                    model.addElement(txt);
+                String Sender = User.GetSender();
+                String Receiver = Users.getSelectedValue();
+                if(Receiver != null) {
+                    try {
+                        C.Send("SendM-" + Sender + "-" + Receiver + "-" + typeMessageHereTextField.getText());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    MSG_STATUS.setText("Message Status: Sent!");
                     typeMessageHereTextField.setText("");
                 }
 
-                 */
-            }
-        });
 
-        /*SearchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
             }
         });
-
-         */
-
     }
     public static MainWindow getInstance() {
         if (instance == null) {
@@ -104,7 +105,9 @@ public class MainWindow extends JFrame{
     public void setStatusLabelText(String text) {
         StatusLabel.setText(text);
     }
-
+    public JList<String> getList() {
+        return Users;
+    }
 
 }
 
