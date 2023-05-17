@@ -1,31 +1,42 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class MainServer {
-
+    private static final Logger LOGGER = LogManager.getLogger(MainServer.class);
     public void run(int Port) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(Port);
-        serverSocket.setSoTimeout(60000);
-        System.out.printf("Waiting for connection on port %d%n", Port);
-        List<ClientHandler> clients = new ArrayList<>();
+        try {
 
-        while (true) {
-            Socket server = serverSocket.accept();
-            System.out.println("Client connected");
+            ServerSocket serverSocket = new ServerSocket(Port);
+            serverSocket.setSoTimeout(60000);
+            System.out.printf("Waiting for connection on port %d%n", Port);
+            List<ClientHandler> clients = new ArrayList<>();
 
-            ClientHandler clientHandler = new ClientHandler(server);
+            while (true) {
+                Socket server = serverSocket.accept();
+                System.out.println("Client connected");
 
-            clients.add(clientHandler);
+                ClientHandler clientHandler = new ClientHandler(server);
 
-            Thread thread = new Thread(clientHandler);
-            thread.start();
+                clients.add(clientHandler);
+
+                Thread thread = new Thread(clientHandler);
+                thread.start();
+            }
+        } catch (SocketTimeoutException | SocketException se) {
+            LOGGER.error("Server socket connection has timed out");
+
         }
     }
-
     private static class ClientHandler implements Runnable {
         private Socket client;
         private BufferedWriter writer;
@@ -82,14 +93,17 @@ public class MainServer {
                             writer.write("SendM-" + Sender + "-" + Receiver + "-" + Message + "-" + Port);
                             writer.newLine();
                             writer.flush();
+                            break;
 
-
+                        case "Close":
+                            ServerCommandHandler.removeUser(Sender);
+                            break;
 
                 
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (NullPointerException | IOException e) {
+                LOGGER.fatal("Invalid input from the client");
             }
         }
     }

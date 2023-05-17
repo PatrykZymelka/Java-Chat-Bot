@@ -20,6 +20,8 @@ public class ServerCommandHandler {
         messages.add(txt);
         messageMap.put(Receiver, messages);
     }
+
+
     public static String[] getConnectedUsers() {
         return connectedUsers.toArray(new String[0]);
     }
