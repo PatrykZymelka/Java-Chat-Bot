@@ -1,0 +1,21 @@
+stages:
+  - build
+  - test
+
+build-java-project:
+  stage: build
+  image: gradle:8.1.1-jdk17
+  script:
+    - ./gradlew buildFatJar
+  tags:
+    - shell
+  when: always
+
+test-java-project:
+  stage: test
+  image: gradle:8.1.1-jdk17
+  script:
+    - ./gradlew test
+  tags:
+    - shell
+  when: on_success
