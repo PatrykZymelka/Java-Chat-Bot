@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 public class MainWindow extends JFrame {
     private static final Logger LOGGER = LogManager.getLogger(MainWindow.class);
     private static MainWindow instance = null;
-    public JPanel MainPanel;
+    public JPanel MainPanel1;
     public JButton ConnectButton;
     public JList<String> Users;
     public JList<String> ChatPanel;
@@ -27,7 +27,7 @@ public class MainWindow extends JFrame {
 
     private MainWindow() {
         Client C = new Client();
-        setContentPane(MainPanel);
+        setContentPane(MainPanel1);
         setTitle("Application-Alpha");
         setSize(650, 600);
         LOGGER.debug("MainWindow setup complete.");
@@ -62,17 +62,7 @@ public class MainWindow extends JFrame {
             }
         });
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                try {
-                    C.close();
-                } catch (Exception exc) {
-                    LOGGER.error("Client couldn't be closed.");
-                }
-                System.exit(0);
-            }
-        });
+
 
         RefreshButton.addActionListener(new ActionListener() {
             @Override
@@ -136,7 +126,7 @@ public class MainWindow extends JFrame {
             }
         });
 
-        setContentPane(MainPanel);
+
     }
 
     public static MainWindow getInstance() {
